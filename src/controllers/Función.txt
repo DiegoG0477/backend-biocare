@@ -1,0 +1,2 @@
+Almacenará funciones que se ejecuten cuando visiten una URL
+

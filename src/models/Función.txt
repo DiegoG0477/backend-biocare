@@ -1,0 +1,3 @@
+Definicion de los modelos de la base de datos.
+
+Validación de datos (Schemas)
