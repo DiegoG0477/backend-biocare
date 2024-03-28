@@ -5,7 +5,7 @@ const { Rol } = require("../models/roles");
 async function getUsuarios(req, res){
     const response = (await Usuario.findAll());
     const result = response.map( async (r)=> {
-        const rol = await Rol.findByPk(r.rol)
+        const rol = await Rol.findByPk(r.rolId);
         return {
            ...r.dataValues, rol: rol.rol
         }

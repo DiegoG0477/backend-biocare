@@ -6,6 +6,9 @@ const path = require('path');
 const { router } = require('./routes/index.js');
 const cors = require('cors');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 //////////Variables globales //////////
 const PORT = process.env.port || 4000
 

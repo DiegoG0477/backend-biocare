@@ -9,7 +9,7 @@ const reporteRoutes = route
     .get('/pdf/last', controller.sendFileReporte)
     .get('/:id', controller.getReporte)
     .post('/', verifyJWT, controller.createReporte)
-    .put('/:id', controller.updateReporte)
-    .delete('/:id', controller.deleteReporte)
+    .put('/:id', verifyJWT, controller.updateReporte)
+    .delete('/:id', verifyJWT, controller.deleteReporte);
 
 module.exports = {reporteRoutes};

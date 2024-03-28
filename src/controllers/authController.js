@@ -48,7 +48,7 @@ async function register(req, res){
             rolId: rolId
         }
         await Usuario.create(newUser);
-        res.json({message: "Usuario creado exitosamente"})
+        res.status(201).json({message: "Usuario creado exitosamente"})
     } catch (e) {
         console.log(e) //logger.error(e)
         res.status(500).json({error: e, message: "Datos invalidos"})

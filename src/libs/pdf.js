@@ -1,4 +1,5 @@
 const { PDFDocument, StandardFonts, rgb } = require('pdf-lib')
+const { capitalizeFirstLetter } = require('./utils')
 const fs  = require('fs')
 const Path = require('path')
 
@@ -18,7 +19,10 @@ async function createPdf(data) {
     const yInitialPosition = height - 4 * fontSize
     const yDisplacement = 46
     const textDisplacement = 240
-    const yRelativePosition = yInitialPosition - 80
+    let yRelativePosition = yInitialPosition - 80;
+    if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+        yRelativePosition = yInitialPosition - 65;
+    }
     const keyToTxt = (key, index) => {
         page.drawText(key.toString().toUpperCase(), {
             x: xInitialPosition + textDisplacement,
@@ -47,13 +51,26 @@ async function createPdf(data) {
                         keyToTxt("Capacitación", index)
                         break;
                     }
-                    keyToTxt("Equipo médico", index)
+                    keyToTxt("Equipo médico", index);
                     break;
                 case "prioridad":
                     keyToTxt("Nivel de Prioridad", index);
                     break;
                 case "area":
                     keyToTxt("Área", index);
+                    break;
+                case "falloReportado":
+                    if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+                        keyToTxt("Fallo reportado", index);
+                        break;
+                    }
+                    break;
+                case "estado":
+                    if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+                        keyToTxt("Estado", index);
+                        break;
+                    }
+                    break;
                 default:
                     keyToTxt(key, index);
                     break;
@@ -72,7 +89,13 @@ async function createPdf(data) {
                 })
             }
 
-            page.drawText(value.toString(), {
+            if(!(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO')){
+                if(key === "falloReportado" || key === "estado"){
+                    value = " "
+                }
+            }
+
+            page.drawText(capitalizeFirstLetter(value), {
                 x: xInitialPosition + textDisplacement,
                 y: yRelativePosition - yDisplacement * index - 20,
                 size: textFontSize,
@@ -130,11 +153,11 @@ async function createPdf(data) {
 
     //image
     if (data.icon){
-        //        page.drawImage(iconImage,{
-        //             x:xInitialPosition,
-        //             y: yInitialPosition - 260,
-        //             size: 200
-        //         })
+        page.drawImage(iconImage,{
+            x:xInitialPosition,
+            y: yInitialPosition - 260,
+            size: 200
+        })
     } else {
         page.drawSquare({
             color: documentColor,
@@ -161,30 +184,45 @@ async function createPdf(data) {
         let index = 0
         const verticalDisplacement = 220
 
-        function capitalizeFirstLetter(string){
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
         for (let [key, value] of Object.entries(data.description)) {
             //subtitle
             if(key === 'descripcion'){
                 key = 'Descripción'
             }
 
-            page.drawText(key.toString().toUpperCase(), {
-                x: xInitialPosition,
-                y: (yRelativePosition - verticalDisplacement) - 140 * index,
-                size: textFontSize,
-                font: helveticaBold,
-            })
+            if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+                page.drawText(key.toString().toUpperCase(), {
+                    x: xInitialPosition,
+                    y: (yRelativePosition - verticalDisplacement) - 140 * index - 35,
+                    size: textFontSize,
+                    font: helveticaBold,
+                })
+
+                page.drawText(capitalizeFirstLetter(value.toString()), {
+                    x: xInitialPosition,
+                    y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index - 35,
+                    size: textFontSize,
+                    font: helvetica
+                })
+            } else {
+                page.drawText(key.toString().toUpperCase(), {
+                    x: xInitialPosition,
+                    y: (yRelativePosition - verticalDisplacement) - 140 * index,
+                    size: textFontSize,
+                    font: helveticaBold,
+                })
+
+                page.drawText(capitalizeFirstLetter(value.toString()), {
+                    x: xInitialPosition,
+                    y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index,
+                    size: textFontSize,
+                    font: helvetica
+                })
+            }
+
             //text
             // page.drawText(value.toString().toLocaleLowerCase(), {
-            page.drawText(capitalizeFirstLetter(value.toString()), {
-                x: xInitialPosition,
-                y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index,
-                size: textFontSize,
-                font: helvetica
-            })
+
             index++;
         }
     }
