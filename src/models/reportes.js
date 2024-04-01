@@ -24,6 +24,9 @@ const Reportes = databaseInstance.define("Reportes",{
     },
     capacitacionSolicitada: {
         type: DataTypes.STRING(100),
+    },
+    dataImg: {
+        type: DataTypes.STRING(100),
     }
 },{
     timestamps: false

@@ -18,9 +18,11 @@ async function login(req, res) {
                 const validation = await authPassword(password, result[0].dataValues.password);
                 console.log(validation)
                 if(validation){
+                    const rol = (await Rol.findOne({where: {'id': result[0].dataValues.rolId}})).dataValues.rol;
+                    const signedRole = authMiddleware.generateToken({role: rol})
                     const token = authMiddleware.generateToken(result[0].dataValues);
 
-                    res.json({message : "Usuario autenticado", usuario: result[0].dataValues, token: token});
+                    res.json({message : "Usuario autenticado", usuario: result[0].dataValues, token: token, signedRole: signedRole, rol: rol});
                 }
                 else
                   res.json({ message: "Credenciales incorrectas" });

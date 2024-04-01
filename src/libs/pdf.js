@@ -36,8 +36,6 @@ async function createPdf(data) {
         let index = 0
         for (let [key, value] of Object.entries(data.content)) {
             //subtitle
-
-            console.log('key:', key, 'value:', value, 'type:', data.tipo.toString().toUpperCase());
             switch (key){
                 case "usuario":
                     keyToTxt("Solicitado por:", index);
@@ -153,11 +151,14 @@ async function createPdf(data) {
 
     //image
     if (data.icon){
-        page.drawImage(iconImage,{
+        const image = await pdfDoc.embedPng(data.icon.path);
+        page.drawImage(image,{
             x:xInitialPosition,
             y: yInitialPosition - 260,
-            size: 200
+            width: 200, 
+            height: 200
         })
+        
     } else {
         page.drawSquare({
             color: documentColor,
@@ -220,12 +221,45 @@ async function createPdf(data) {
                 })
             }
 
-            //text
-            // page.drawText(value.toString().toLocaleLowerCase(), {
-
             index++;
         }
+
+        let descriptionHeightSpace = 115;
+        let observationsHeightSpace = 15;
+
+        if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+            descriptionHeightSpace = 77;
+            observationsHeightSpace = 50;
+        }
+
+        //lineas para la descripcion
+        for(let i = 0; i<5; i++){
+            page.drawLine({
+                start: { x: xInitialPosition, y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index + descriptionHeightSpace - i*19 },
+                end: { x: xInitialPosition + 500, y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index + descriptionHeightSpace - i*19 },
+                thickness: 1,
+                color: rgb(0, 0, 0),
+            });
+        }
+
+
+        let linesQuantity = 7;
+
+        if(data.tipo.toString().toUpperCase() === 'MANTENIMIENTO'){
+            linesQuantity = 6;
+        }
+
+        //lineas para las observaciones
+        for(let i = 0; i<linesQuantity; i++){
+            page.drawLine({
+                start: { x: xInitialPosition, y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index - observationsHeightSpace - i*19 },
+                end: { x: xInitialPosition + 500, y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index - observationsHeightSpace - i*19 },
+                thickness: 1,
+                color: rgb(0, 0, 0),
+            });
+        }
     }
+
     //footer
     page.drawRectangle({
         x:xInitialPosition,

@@ -10,7 +10,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //////////Variables globales //////////
-const PORT = process.env.port || 4000
+const PORT = process.env.PORT || 4000
 
 ////////// Inicialización //////////
 const app = express();

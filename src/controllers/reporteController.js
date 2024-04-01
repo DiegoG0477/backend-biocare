@@ -7,6 +7,7 @@ const { Prioridad } = require("../models/prioridad");
 const { TipoReporte } = require("../models/tipoReportes");
 const { Consumible } = require("../models/consumible");
 const { Estado } = require("../models/estados");
+const fs = require("fs");
 
 async function getReportes(req, res) {
     try {
@@ -96,10 +97,11 @@ async function createReporte(req, res) {
             equipoReportado,
             estado,
             capacitacionSolicitada,
+            imgData
         } = req.body;
         const idUsuario = req.user.id;
 
-        console.log(req.body);
+        const imgPath = imgData.toString().replace('/src', 'storage');
 
         const areaId = (await Area.findOne({ where: { area: area } }))
             .dataValues.id;
@@ -123,9 +125,8 @@ async function createReporte(req, res) {
             TipoReporteId: idTipoReporte, //ok
             UsuarioId: idUsuario, //ok
             capacitacionSolicitada: capacitacionSolicitada, //ok
+            dataImg: imgPath,
         };
-
-        console.log(newReportBody);
 
         await Reportes.create(newReportBody);
 
@@ -211,6 +212,14 @@ async function sendFileReporte(req, res) {
         solicitud = reportFound.dataValues.capacitacionSolicitada;
     }
 
+    if (fs.existsSync(reportFound.dataValues.dataImg)) {
+        const img = fs.readFileSync(reportFound.dataValues.dataImg);
+        console.log(img);
+        console.log("tipo", typeof img);
+    } else {
+        console.log('El archivo no existe:', reportFound.dataValues.dataImg);
+    }
+
     const reportData = {
         tipo: tipo,
         content: {
@@ -230,6 +239,9 @@ async function sendFileReporte(req, res) {
             descripcion: reportFound.dataValues.descripcion,
             observaciones: "",
         },
+        icon: {
+            path: fs.readFileSync(reportFound.dataValues.dataImg)
+        }
     };
 
     const file = Buffer.from(await generateReportPDF(reportData));
