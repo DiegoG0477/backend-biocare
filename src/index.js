@@ -1,22 +1,13 @@
 //////////////////////Arranque de aplicación/////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
 const { router } = require("./routes/index.js");
-const cors = require("cors");
 
 const dotenv = require("dotenv");
 dotenv.config();
-
-//////////Variables globales //////////
-const PORT = process.env.PORT || 4000;
-
-////////// Inicialización //////////
-const app = express();
-
-////////// Configuración //////////
-app.set("port", PORT || 4000);
 
 ////////// Middlewares //////////
 app.use(
@@ -29,6 +20,15 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false })); // Para aceptar los formularios de los usuarios.
 app.use(express.json());
+
+//////////Variables globales //////////
+const PORT = process.env.PORT || 4000;
+
+////////// Inicialización //////////
+const app = express();
+
+////////// Configuración //////////
+app.set("port", PORT || 4000);
 
 //              ROUTER                 //
 app.use("/", router);
