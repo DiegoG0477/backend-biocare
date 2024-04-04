@@ -9,6 +9,9 @@ const { router } = require("./routes/index.js");
 const dotenv = require("dotenv");
 dotenv.config();
 
+////////// Inicialización //////////
+const app = express();
+
 ////////// Middlewares //////////
 app.use(
     cors({
@@ -23,9 +26,6 @@ app.use(express.json());
 
 //////////Variables globales //////////
 const PORT = process.env.PORT || 4000;
-
-////////// Inicialización //////////
-const app = express();
 
 ////////// Configuración //////////
 app.set("port", PORT || 4000);
