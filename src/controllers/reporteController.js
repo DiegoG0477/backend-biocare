@@ -101,6 +101,8 @@ async function createReporte(req, res) {
         } = req.body;
         const idUsuario = req.user.id;
 
+        // const imgPath = imgData.toString().replace('/src', 'storage');
+
         const prefix = "storage"
 
         const imgPath = `${prefix}${imgData.toString()}`;

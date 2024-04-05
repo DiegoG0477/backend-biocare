@@ -185,7 +185,25 @@ async function createPdf(data) {
         let index = 0
         const verticalDisplacement = 220
 
-        for (let [key, value] of Object.entries(data.description)) {
+        const salts = Math.floor(data.description.descripcion.length / 76);
+        const linesArray = [];
+        
+        console.log('salts',salts);
+        for (let i = 0; i < salts; i++) {
+            const startIndex = i * 76;
+            const endIndex = (i + 1) * 76;
+            const line = data.description.descripcion.slice(startIndex, endIndex);
+            linesArray.push(line);
+        }
+        
+        // Asegúrate de incluir cualquier resto de caracteres que no formen una línea completa
+        const remainder = data.description.descripcion.slice(salts * 76);
+        if (remainder) {
+            linesArray.push(remainder);
+        }
+        
+
+        for (let [key] of Object.entries(data.description)) {
             //subtitle
             if(key === 'descripcion'){
                 key = 'Descripción'
@@ -199,12 +217,22 @@ async function createPdf(data) {
                     font: helveticaBold,
                 })
 
-                page.drawText(capitalizeFirstLetter(value.toString()), {
-                    x: xInitialPosition,
-                    y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index - 35,
-                    size: textFontSize,
-                    font: helvetica
-                })
+                // page.drawText(capitalizeFirstLetter(value.toString()), {
+                //     x: xInitialPosition,
+                //     y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index - 35,
+                //     size: textFontSize,
+                //     font: helvetica
+                // })
+
+                for (let index = 0; index < linesArray.length; index++) {
+                    page.drawText(capitalizeFirstLetter(linesArray[index].toString()), {
+                        x: xInitialPosition,
+                        y: (yRelativePosition - verticalDisplacement) - 30 - 21.5 * index - 35,
+                        size: textFontSize,
+                        font: helvetica
+                    })
+                }
+
             } else {
                 page.drawText(key.toString().toUpperCase(), {
                     x: xInitialPosition,
@@ -213,12 +241,14 @@ async function createPdf(data) {
                     font: helveticaBold,
                 })
 
-                page.drawText(capitalizeFirstLetter(value.toString()), {
-                    x: xInitialPosition,
-                    y: (yRelativePosition - verticalDisplacement) - 30 - 60 * index,
-                    size: textFontSize,
-                    font: helvetica
-                })
+                for (let index = 0; index < linesArray.length; index++) {
+                    page.drawText(capitalizeFirstLetter(linesArray[index].toString()), {
+                        x: xInitialPosition,
+                        y: (yRelativePosition - verticalDisplacement) - 30 - 20 * index,
+                        size: textFontSize,
+                        font: helvetica
+                    })
+                }
             }
 
             index++;
